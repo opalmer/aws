@@ -3,12 +3,13 @@
   "Description": "Cloud formation stack for httpbin.pyfarm.net",
   "Parameters": {
     "Region": {
-      "Default": "us-east-1",
-      "Description": "The region to create resources in."
+      "Type": "String",
+      "Description": "The region to create resources in.",
+      "Default": "us-east-1"
     },
     "InstanceType": {
-      "Description": "The EC2 instance type",
       "Type": "String",
+      "Description": "The EC2 instance type",
       "Default": "t2.micro",
       "AllowedValues": [
         "t2.micro",
@@ -17,13 +18,14 @@
       ],
       "ConstraintDescription": "Must be a valid EC2 instance type."
     },
-    "KeyName": {
-      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+    "SSHKey": {
       "Type": "AWS::EC2::KeyPair::KeyName",
-      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair."
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
+      "Default": "opalmer"
     },
-    "SSHLocation" : {
-      "Description" : "The IP address range that can be used to SSH to the EC2 instances",
+    "SSHLocation": {
+      "Description": "The IP address range that can be used to SSH to the EC2 instances",
       "Type": "String",
       "MinLength": "9",
       "MaxLength": "18",
@@ -40,10 +42,19 @@
     }
   },
   "Resources": {
-    "VPC": {
-       "Type" : "AWS::CloudFormation::Stack",
-       "Properties" : {
-          "TemplateURL": "https://s3.amazonaws.com/opalmer/cloud_formation/httpbin/vpc.template"
+    "CoreNetwork": {
+       "Type": "AWS::CloudFormation::Stack",
+       "Properties": {
+         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/vpc_network_core.template"
+       }
+    },
+    "NetworkACLs": {
+       "Type": "AWS::CloudFormation::Stack",
+       "Properties": {
+         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/httpbin/vpc_network_acl.template",
+         "Parameters": {
+           "NetworkACL": {"Fn::GetAtt": ["CoreNetwork", "Outputs.NetworkACL"]}
+         }
        }
     }
   }
