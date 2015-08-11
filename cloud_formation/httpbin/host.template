@@ -1,7 +1,75 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Creates the host(s) for httpin.pyfarm.net",
+  "Description": "Creates the host(s) for httpbin",
+  "Parameters": {
+    "VPC": {"Type": "String"},
+    "ImageId": {"Type": "String"},
+    "InstanceType": {"Type": "String"},
+    "Subnet1": {"Type": "String"},
+    "VPCSecurityGroup": {"Type": "String"},
+    "SSHKey": {"Type": "String"}
+  },
   "Resources": {
-
+    "SSLAccessRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Path": "/httpbin/",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {"Service": ["ec2.amazonaws.com"]},
+              "Action": ["sts:AssumeRole"]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "ssl_key_httpbin_access",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": "arn:aws:s3:::opalmer/aws/ssl/httpbin.key"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "InstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/httpbin/",
+        "Roles": [{"Ref": "SSLAccessRole"}]
+      }
+    },
+    "Host": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "KeyName": {"Ref": "SSHKey"},
+        "ImageId": {"Ref": "ImageId"},
+        "InstanceType": {"Ref": "InstanceType"},
+        "IamInstanceProfile": {"Ref": "InstanceProfile"},
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [{"Ref": "VPCSecurityGroup"}],
+            "SubnetId": {"Ref": "Subnet1"}
+          }
+        ],
+        "UserData": {"Fn::Base64": {"Fn::Join": ["\n", [
+          "#!/bin/bash -ex",
+          "curl https://raw.githubusercontent.com/opalmer/aws/master/hosts/httpbin/bootstrap.sh -o /tmp/bootstrap.sh",
+          "chmod +x /tmp/bootstrap.sh",
+          "/tmp/bootstrap.sh >>/var/log/bootstrap.log 2>&1"
+        ]]}}
+      }
+    }
   }
 }
