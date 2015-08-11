@@ -10,7 +10,7 @@ server {
     server_name httpbin.opalmer.com;
     root /srv/;
     location / {
-        uwsgi_pass unix:///tmp/uwsgi_httpbin.sock;
+        uwsgi_pass unix:///run/uwsgi/app/httpbin/socket;
         include uwsgi_params;
     }
 }
