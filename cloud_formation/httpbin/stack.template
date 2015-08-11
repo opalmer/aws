@@ -2,21 +2,19 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Cloud formation stack for httpbin.pyfarm.net",
   "Parameters": {
-    "Region": {
-      "Type": "String",
-      "Description": "The region to create resources in.",
-      "Default": "us-east-1"
-    },
     "InstanceType": {
       "Type": "String",
       "Description": "The EC2 instance type",
       "Default": "t2.micro",
-      "AllowedValues": [
-        "t2.micro",
-        "t2.small",
-        "t2.medium"
-      ],
+      "AllowedValues": ["t2.micro", "t2.small", "t2.medium"],
       "ConstraintDescription": "Must be a valid EC2 instance type."
+    },
+    "StorageType": {
+      "Type": "String",
+      "Description": "The general type of storage to provision for instances.",
+      "Default": "Magnetic",
+      "AllowedValues": ["SSD", "Magnetic", "InstanceStore"],
+      "ConstraintDescription": "Must be a valid storage type."
     },
     "SSHKey": {
       "Type": "AWS::EC2::KeyPair::KeyName",
@@ -34,10 +32,22 @@
       "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x."
    }
   },
-  "Mappings": {
-    "RegionMap": {
+  "Mappings" : {
+    "TrustyHVMImages": {
       "us-east-1": {
-        "ubuntu": "ami-478b262c"
+        "SSD": "ami-75f0581e",
+        "Magnetic": "ami-7df05816",
+        "InstanceStore": "ami-a1f951ca"
+      },
+      "us-west-1": {
+        "SSD": "ami-978f71d3",
+        "Magnetic": "ami-8b8f71cf",
+        "InstanceStore": "ami-598f711d"
+      },
+      "us-west-2": {
+        "SSD": "ami-39666c09",
+        "Magnetic": "ami-33666c03",
+        "InstanceStore": "ami-a9606a99"
       }
     }
   },
@@ -48,14 +58,31 @@
          "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/vpc_network_core.template"
        }
     },
-    "NetworkACLs": {
-       "Type": "AWS::CloudFormation::Stack",
+    "VPCSecurity": {
+      "Type": "AWS::CloudFormation::Stack",
+      "DependsOn": "CoreNetwork",
        "Properties": {
-         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/httpbin/vpc_network_acl.template",
+         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/httpbin/vpc_security.template",
          "Parameters": {
-           "NetworkACL": {"Fn::GetAtt": ["CoreNetwork", "Outputs.NetworkACL"]}
+           "NetworkACL": {"Fn::GetAtt": ["CoreNetwork", "Outputs.NetworkACL"]},
+           "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]}
          }
        }
+    },
+    "Host": {
+      "Type": "AWS::CloudFormation::Stack",
+      "DependsOn": "CoreNetwork",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/httpbin/host.template",
+        "Parameters": {
+          "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]},
+          "ImageId": {"Fn::FindInMap": ["TrustyHVMImages", {"Ref": "AWS::Region"}, {"Ref": "StorageType"}]},
+          "InstanceType": {"Ref": "InstanceType"},
+          "Subnet1": {"Fn::GetAtt": ["CoreNetwork", "Outputs.Subnet1"]},
+          "VPCSecurityGroup": {"Fn::GetAtt": ["VPCSecurity", "Outputs.VPCSecurityGroup"]},
+          "SSHKey": {"Ref": "SSHKey"}
+        }
+      }
     }
   }
 }
