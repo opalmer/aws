@@ -73,6 +73,14 @@
     "NetworkACL": {
       "Description": "The network ACL which new entries can be attacked to.",
       "Value": {"Ref": "NetworkACL"}
+    },
+    "VPC": {
+      "Description": "The VPC created by this stack.",
+      "Value": {"Ref": "VPC"}
+    },
+    "Subnet1": {
+      "Description": "The first subnet this stack created.",
+      "Value": {"Ref": "Subnet1"}
     }
   }
 }
