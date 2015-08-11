@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -ex
+#!/bin/bash -ex
 
 apt-get -y install python-dev uwsgi uwsgi-plugin-python nginx python-pip
 pip install httpbin awscli
