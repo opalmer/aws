@@ -1,0 +1,16 @@
+server {
+    listen 80;
+    listen 443 ssl;
+
+    ssl_certificate /etc/ssl/certs/httpbin.pem;
+    ssl_certificate_key /etc/ssl/private/httpbin.key;
+    ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
+    ssl_ciphers !RC4:HIGH:!aNULL:!MD5;
+
+    server_name httpbin.opalmer.com;
+    root /srv/;
+    location / {
+        uwsgi_pass unix:///tmp/uwsgi_httpbin.sock;
+        include uwsgi_params;
+    }
+}
