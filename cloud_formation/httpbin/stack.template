@@ -61,17 +61,23 @@
     "VPCSecurity": {
       "Type": "AWS::CloudFormation::Stack",
       "DependsOn": "CoreNetwork",
-       "Properties": {
-         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/httpbin/vpc_security.template",
-         "Parameters": {
-           "NetworkACL": {"Fn::GetAtt": ["CoreNetwork", "Outputs.NetworkACL"]},
-           "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]}
-         }
+      "Properties": {
+       "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/httpbin/vpc_security.template",
+       "Parameters": {
+         "NetworkACL": {"Fn::GetAtt": ["CoreNetwork", "Outputs.NetworkACL"]},
+         "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]}
        }
+      }
+    },
+    "SSLKeyAccessRole": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/ssl_key_access_role.template",
+        "Parameters": {"Name": "httpbin"}
+      }
     },
     "Host": {
       "Type": "AWS::CloudFormation::Stack",
-      "DependsOn": "CoreNetwork",
       "Properties": {
         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/httpbin/host.template",
         "Parameters": {
@@ -80,7 +86,9 @@
           "InstanceType": {"Ref": "InstanceType"},
           "Subnet1": {"Fn::GetAtt": ["CoreNetwork", "Outputs.Subnet1"]},
           "VPCSecurityGroup": {"Fn::GetAtt": ["VPCSecurity", "Outputs.VPCSecurityGroup"]},
-          "SSHKey": {"Ref": "SSHKey"}
+          "SSHKey": {"Ref": "SSHKey"},
+          "SSLKeyRole": {"Fn::GetAtt": ["SSLKeyAccessRole", "Outputs.Role"]},
+          "SSLKeyRolePath": {"Fn::GetAtt": ["SSLKeyAccessRole", "Outputs.Path"]}
         }
       }
     }
