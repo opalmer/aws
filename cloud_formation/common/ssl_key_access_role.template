@@ -1,0 +1,55 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Common stack which defines a single role used to access an SSL key.",
+  "Parameters": {
+    "Name": {
+      "Type": "String",
+      "Description": "Name of the project or host we're creating an access role for."
+    }
+  },
+  "Resources": {
+    "CreateRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Path": {"Fn::Join": ["", ["/", {"Ref": "Name"}, "/"]]},
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {"Service": ["ec2.amazonaws.com"]},
+              "Action": ["sts:AssumeRole"]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": ["", ["ssl_key_access_", {"Ref": "Name"}]]},
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": {"Fn::Join": ["",
+                    ["arn:aws:s3:::opalmer/aws/ssl/", {"Ref": "Name"}, ".key"]]}
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "Path": {
+      "Value": {"Fn::Join": ["", ["/", {"Ref": "Name"}, "/"]]},
+      "Description": "The path the role is using."
+    },
+    "Role": {
+      "Value": {"Ref": "CreateRole"},
+      "Description": "The role produced which will have access to the key material."
+    }
+  }
+}
