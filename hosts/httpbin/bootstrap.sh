@@ -9,6 +9,7 @@ curl https://raw.githubusercontent.com/opalmer/aws/master/hosts/httpbin/files/et
 curl https://raw.githubusercontent.com/opalmer/aws/master/hosts/httpbin/files/etc/hostname -o /etc/hostname
 curl https://raw.githubusercontent.com/opalmer/aws/master/hosts/httpbin/files/etc/hosts -o /etc/hosts
 aws s3 cp s3://opalmer/aws/ssl/httpbin.key /etc/ssl/private/httpbin.key
+openssl dhparam -out /etc/ssl/dhparams.pem 2048
 
 hostname -F /etc/hostname
 service nginx restart
