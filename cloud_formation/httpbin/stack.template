@@ -92,8 +92,9 @@
         }
       }
     },
-    "DNSRecord": {
+    "DNSRecord1": {
       "Type": "AWS::Route53::RecordSet",
+      "DependsOn": "Host",
       "Properties": {
         "Type": "A",
         "Name": "httpbin.opalmer.com.",
@@ -101,7 +102,20 @@
         "ResourceRecords": [
           {"Fn::GetAtt": ["Host", "Outputs.PublicIP"]}
         ],
-        "TTL": "60"
+        "TTL": "30"
+      }
+    },
+    "DNSRecord2": {
+      "Type": "AWS::Route53::RecordSet",
+      "DependsOn": "Host",
+      "Properties": {
+        "Type": "A",
+        "Name": "httpbin.pyfarm.net.",
+        "HostedZoneName": "pyfarm.net.",
+        "ResourceRecords": [
+          {"Fn::GetAtt": ["Host", "Outputs.PublicIP"]}
+        ],
+        "TTL": "30"
       }
     }
   }
