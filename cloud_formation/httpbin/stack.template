@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Cloud formation stack for httpbin.opalmer.com",
+  "Description": "Cloud formation stack for httpbin",
   "Parameters": {
     "InstanceType": {
       "Type": "String",
@@ -92,20 +92,7 @@
         }
       }
     },
-    "DNSRecord1": {
-      "Type": "AWS::Route53::RecordSet",
-      "DependsOn": "Host",
-      "Properties": {
-        "Type": "A",
-        "Name": "httpbin.opalmer.com.",
-        "HostedZoneName": "opalmer.com.",
-        "ResourceRecords": [
-          {"Fn::GetAtt": ["Host", "Outputs.PublicIP"]}
-        ],
-        "TTL": "30"
-      }
-    },
-    "DNSRecord2": {
+    "DNSRecord": {
       "Type": "AWS::Route53::RecordSet",
       "DependsOn": "Host",
       "Properties": {
