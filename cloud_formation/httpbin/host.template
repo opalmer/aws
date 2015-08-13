@@ -42,5 +42,10 @@
         ]]}}
       }
     }
+  },
+  "Outputs": {
+    "PublicIP": {
+      "Value": {"Fn::GetAtt": ["Host", "PublicIp"]}
+    }
   }
 }
