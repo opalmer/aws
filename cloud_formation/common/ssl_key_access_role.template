@@ -47,10 +47,6 @@
     }
   },
   "Outputs": {
-    "Path": {
-      "Value": {"Fn::Join": ["", ["/", {"Ref": "Name"}, "/"]]},
-      "Description": "The path the role is using."
-    },
     "Role": {
       "Value": {"Ref": "CreateRole"},
       "Description": "The role produced which will have access to the key material."
