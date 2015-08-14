@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Cloud formation stack for httpbin",
+  "Description": "Cloud formation stack for pyfarm",
   "Parameters": {
     "InstanceType": {
       "Type": "String",
@@ -62,7 +62,7 @@
       "Type": "AWS::CloudFormation::Stack",
       "DependsOn": "CoreNetwork",
       "Properties": {
-       "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/httpbin/vpc_security.template",
+       "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/vpc_security.template",
        "Parameters": {
          "NetworkACL": {"Fn::GetAtt": ["CoreNetwork", "Outputs.NetworkACL"]},
          "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]}
@@ -79,7 +79,7 @@
     "Host": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/httpbin/host.template",
+        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/host.template",
         "Parameters": {
           "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]},
           "ImageId": {"Fn::FindInMap": ["TrustyHVMImages", {"Ref": "AWS::Region"}, {"Ref": "StorageType"}]},
@@ -92,17 +92,13 @@
         }
       }
     },
-    "DNSRecord": {
-      "Type": "AWS::Route53::RecordSet",
-      "DependsOn": "Host",
+    "DNS": {
+      "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "Type": "A",
-        "Name": "httpbin.pyfarm.net.",
-        "HostedZoneName": "pyfarm.net.",
-        "ResourceRecords": [
-          {"Fn::GetAtt": ["Host", "Outputs.PublicIP"]}
-        ],
-        "TTL": "30"
+        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/dns.template",
+        "Parameters": {
+          "PublicIP": {"Fn::GetAtt": ["CoreNetwork", "Outputs.PublicIP"]}
+        }
       }
     }
   }

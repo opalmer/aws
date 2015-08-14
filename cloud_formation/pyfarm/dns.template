@@ -1,0 +1,49 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Creates the DNS records",
+  "Parameters": {
+    "PublicIP": {"Type": "String"},
+    "TTL": {
+      "Type": "String",
+      "Default": "60"
+    }
+  },
+  "Resources": {
+    "HTTPBin": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Type": "A",
+        "Name": "httpbin.pyfarm.net.",
+        "HostedZoneName": "pyfarm.net.",
+        "ResourceRecords": [
+          {"Ref": "PublicIP"}
+        ],
+        "TTL": {"Ref": "TTL"}
+      }
+    },
+    "RootDomain": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Type": "A",
+        "Name": "",
+        "HostedZoneName": "pyfarm.net.",
+        "ResourceRecords": [
+          {"Ref": "PublicIP"}
+        ],
+        "TTL": {"Ref": "TTL"}
+      }
+    },
+    "WWW": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Type": "A",
+        "Name": "www.pyfarm.net.",
+        "HostedZoneName": "pyfarm.net.",
+        "ResourceRecords": [
+          {"Ref": "PublicIP"}
+        ],
+        "TTL": {"Ref": "TTL"}
+      }
+    }
+  }
+}

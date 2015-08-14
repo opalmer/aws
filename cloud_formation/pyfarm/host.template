@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Creates the host(s) for httpbin",
+  "Description": "Creates the host(s)",
   "Parameters": {
     "VPC": {"Type": "String"},
     "ImageId": {"Type": "String"},
@@ -36,7 +36,7 @@
         ],
         "UserData": {"Fn::Base64": {"Fn::Join": ["\n", [
           "#!/bin/bash -ex",
-          "curl https://raw.githubusercontent.com/opalmer/aws/master/hosts/httpbin/bootstrap.sh -o /tmp/bootstrap.sh",
+          "curl https://raw.githubusercontent.com/opalmer/aws/master/hosts/pyfarm/bootstrap.sh -o /tmp/bootstrap.sh",
           "chmod +x /tmp/bootstrap.sh",
           "/tmp/bootstrap.sh >>/var/log/bootstrap.log 2>&1"
         ]]}}
