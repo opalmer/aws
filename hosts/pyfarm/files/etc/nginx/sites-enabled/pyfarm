@@ -9,9 +9,7 @@ server {
     ssl_dhparam /etc/ssl/dhparams.pem;
     ssl_prefer_server_ciphers on;
 
-    server_name .pyfarm.net;
-    root /srv/;
-
+    server_name pyfarm.net www.pyfarm.net;
     location / {
          proxy_pass http://pyfarm.readthedocs.org:80;
          proxy_set_header Host $http_host;

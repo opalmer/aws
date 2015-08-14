@@ -10,8 +10,6 @@ server {
     ssl_prefer_server_ciphers on;
 
     server_name httpbin.pyfarm.net;
-    root /srv/;
-
     location / {
         uwsgi_pass unix:///run/uwsgi/app/httpbin/socket;
         include uwsgi_params;
