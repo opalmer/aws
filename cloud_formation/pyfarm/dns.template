@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Creates the DNS records",
+  "Description": "Creates DNS records for pyfarm",
   "Parameters": {
     "PublicIP": {"Type": "String"},
     "TTL": {
@@ -9,7 +9,7 @@
     }
   },
   "Resources": {
-    "HTTPBin": {
+    "httpbin": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "Type": "A",
@@ -21,11 +21,11 @@
         "TTL": {"Ref": "TTL"}
       }
     },
-    "RootDomain": {
+    "root": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "Type": "A",
-        "Name": "",
+        "Name": "pyfarm.net.",
         "HostedZoneName": "pyfarm.net.",
         "ResourceRecords": [
           {"Ref": "PublicIP"}
@@ -33,7 +33,7 @@
         "TTL": {"Ref": "TTL"}
       }
     },
-    "WWW": {
+    "www": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "Type": "A",
@@ -41,6 +41,30 @@
         "HostedZoneName": "pyfarm.net.",
         "ResourceRecords": [
           {"Ref": "PublicIP"}
+        ],
+        "TTL": {"Ref": "TTL"}
+      }
+    },
+    "docs": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Type": "CNAME",
+        "Name": "docs.pyfarm.net.",
+        "HostedZoneName": "pyfarm.net.",
+        "ResourceRecords": [
+          "pyfarm.readthedocs.org"
+        ],
+        "TTL": {"Ref": "TTL"}
+      }
+    },
+    "groups": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Type": "CNAME",
+        "Name": "groups.pyfarm.net.",
+        "HostedZoneName": "pyfarm.net.",
+        "ResourceRecords": [
+          "ghs.googlehosted.com."
         ],
         "TTL": {"Ref": "TTL"}
       }
