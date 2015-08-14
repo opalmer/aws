@@ -65,7 +65,8 @@
        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/vpc_security.template",
        "Parameters": {
          "NetworkACL": {"Fn::GetAtt": ["CoreNetwork", "Outputs.NetworkACL"]},
-         "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]}
+         "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]},
+         "SSHLocation": {"Ref": "SSHLocation"}
        }
       }
     },
@@ -73,7 +74,7 @@
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/ssl_key_access_role.template",
-        "Parameters": {"Name": "httpbin"}
+        "Parameters": {"Name": "pyfarm"}
       }
     },
     "Host": {
@@ -89,15 +90,6 @@
           "SSHKey": {"Ref": "SSHKey"},
           "SSLKeyRole": {"Fn::GetAtt": ["SSLKeyAccessRole", "Outputs.Role"]},
           "SSLKeyRolePath": {"Fn::GetAtt": ["SSLKeyAccessRole", "Outputs.Path"]}
-        }
-      }
-    },
-    "DNS": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/dns.template",
-        "Parameters": {
-          "PublicIP": {"Fn::GetAtt": ["Host", "Outputs.PublicIP"]}
         }
       }
     }
