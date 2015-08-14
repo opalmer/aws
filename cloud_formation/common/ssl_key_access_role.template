@@ -2,16 +2,20 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Common stack which defines a single role used to access an SSL key.",
   "Parameters": {
-    "Name": {
+    "KeyName": {
       "Type": "String",
       "Description": "Name of the project or host we're creating an access role for."
+    },
+    "Path": {
+      "Type": "String",
+      "Description": "Name of the role context path. Usually this will be the same as KeyName."
     }
   },
   "Resources": {
     "CreateRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
-        "Path": {"Fn::Join": ["", ["/", {"Ref": "Name"}, "/"]]},
+        "Path": {"Fn::Join": ["", ["/", {"Ref": "Path"}, "/"]]},
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -25,7 +29,7 @@
         "Policies": [
           {
             "PolicyName": {
-              "Fn::Join": ["", ["ssl_key_access_", {"Ref": "Name"}]]},
+              "Fn::Join": ["", ["ssl_key_access_", {"Ref": "KeyName"}]]},
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
@@ -33,7 +37,7 @@
                   "Effect": "Allow",
                   "Action": "s3:GetObject",
                   "Resource": {"Fn::Join": ["",
-                    ["arn:aws:s3:::opalmer/aws/ssl/", {"Ref": "Name"}, ".key"]]}
+                    ["arn:aws:s3:::opalmer/aws/ssl/", {"Ref": "KeyName"}, ".key"]]}
                 }
               ]
             }
