@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Network ACLs for httpbin.opalmer.com",
+  "Description": "Network ACLs for pyfarm.net",
   "Parameters": {
     "NetworkACL": {"Type": "String"},
     "VPC": {"Type": "String"}

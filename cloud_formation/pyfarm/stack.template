@@ -97,7 +97,7 @@
       "Properties": {
         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/dns.template",
         "Parameters": {
-          "PublicIP": {"Fn::GetAtt": ["CoreNetwork", "Outputs.PublicIP"]}
+          "PublicIP": {"Fn::GetAtt": ["Host", "Outputs.PublicIP"]}
         }
       }
     }
