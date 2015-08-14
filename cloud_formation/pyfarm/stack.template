@@ -22,12 +22,11 @@
       "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
       "Default": "opalmer"
     },
-    "SSHLocation": {
+    "AllowAdminFrom": {
       "Description": "The IP address range that can be used to SSH to the EC2 instances",
       "Type": "String",
       "MinLength": "9",
       "MaxLength": "18",
-      "Default": "0.0.0.0/0",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
       "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x."
    }
@@ -66,7 +65,7 @@
        "Parameters": {
          "NetworkACL": {"Fn::GetAtt": ["CoreNetwork", "Outputs.NetworkACL"]},
          "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]},
-         "SSHLocation": {"Ref": "SSHLocation"}
+         "AdminAddresses": {"Ref": "AllowAdminFrom"}
        }
       }
     },
