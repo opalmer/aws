@@ -4,7 +4,7 @@
   "Parameters": {
     "NetworkACL": {"Type": "String"},
     "VPC": {"Type": "String"},
-    "SSHLocation": {"Type": "String"}
+    "AdminAddresses": {"Type": "String"}
   },
   "Resources": {
     "AllowAllInbound": {
@@ -40,7 +40,7 @@
           {
             "IpProtocol": "tcp",
             "FromPort": "22", "ToPort": "22",
-            "CidrIp": {"Ref": "SSHLocation"}
+            "CidrIp": {"Ref": "AdminAddresses"}
           },
           {
             "IpProtocol": "tcp",
