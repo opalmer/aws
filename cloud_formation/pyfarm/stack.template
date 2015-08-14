@@ -70,11 +70,24 @@
        }
       }
     },
-    "SSLKeyAccessRole": {
+    "SSLKeyAccessRolePyFarm": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/ssl_key_access_role.template",
-        "Parameters": {"Name": "pyfarm"}
+        "Parameters": {
+          "KeyName": "pyfarm",
+          "Path": "pyfarm"
+        }
+      }
+    },
+    "SSLKeyAccessRoleHTTPBin": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/ssl_key_access_role.template",
+        "Parameters": {
+          "KeyName": "httpbin",
+          "Path": "pyfarm"
+        }
       }
     },
     "Host": {
@@ -88,8 +101,9 @@
           "Subnet1": {"Fn::GetAtt": ["CoreNetwork", "Outputs.Subnet1"]},
           "VPCSecurityGroup": {"Fn::GetAtt": ["VPCSecurity", "Outputs.VPCSecurityGroup"]},
           "SSHKey": {"Ref": "SSHKey"},
-          "SSLKeyRole": {"Fn::GetAtt": ["SSLKeyAccessRole", "Outputs.Role"]},
-          "SSLKeyRolePath": {"Fn::GetAtt": ["SSLKeyAccessRole", "Outputs.Path"]}
+          "SSLKeyRolePyFarm": {"Fn::GetAtt": ["SSLKeyAccessRolePyFarm", "Outputs.Role"]},
+          "SSLKeyRoleHTTPBin": {"Fn::GetAtt": ["SSLKeyAccessRoleHTTPBin", "Outputs.Role"]},
+          "SSLKeyRolePath": "/pyfarm/"
         }
       }
     }
