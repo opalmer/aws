@@ -81,7 +81,10 @@
           "curl https://raw.githubusercontent.com/opalmer/aws/master/hosts/pyfarm/bootstrap.sh -o /tmp/bootstrap.sh",
           "chmod +x /tmp/bootstrap.sh",
           "/tmp/bootstrap.sh >>/var/log/bootstrap.log 2>&1"
-        ]]}}
+        ]]}},
+        "Tags": [
+          {"Key": "Name", "Value": "pyfarm"}
+        ]
       }
     }
   },
