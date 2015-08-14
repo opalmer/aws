@@ -1,5 +1,7 @@
 #!/bin/bash -ex
 
+apt-get update
+apt-get -y upgrade
 apt-get -y install python-dev uwsgi uwsgi-plugin-python nginx python-pip
 pip install awscli httpbin
 
