@@ -7,7 +7,8 @@
     "InstanceType": {"Type": "String"},
     "Subnet1": {"Type": "String"},
     "VPCSecurityGroup": {"Type": "String"},
-    "SSHKey": {"Type": "String"}
+    "SSHKey": {"Type": "String"},
+    "AvailabilityZone": {"Type": "String"}
   },
   "Resources": {
     "AccessRole": {
@@ -68,6 +69,7 @@
         "ImageId": {"Ref": "ImageId"},
         "InstanceType": {"Ref": "InstanceType"},
         "IamInstanceProfile": {"Ref": "InstanceProfile"},
+        "AvailabilityZone": {"Ref": "AvailabilityZone"},
         "NetworkInterfaces": [
           {
             "AssociatePublicIpAddress": "true",

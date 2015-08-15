@@ -9,6 +9,11 @@
       "AllowedValues": ["t2.micro", "t2.small", "t2.medium"],
       "ConstraintDescription": "Must be a valid EC2 instance type."
     },
+    "AvailabilityZone": {
+      "Type": "AWS::EC2::AvailabilityZone::Name",
+      "Default": "us-east-1e",
+      "Description": "The AZ to place the instance in."
+    },
     "StorageType": {
       "Type": "String",
       "Description": "The general type of storage to provision for instances.",
@@ -79,7 +84,8 @@
           "InstanceType": {"Ref": "InstanceType"},
           "Subnet1": {"Fn::GetAtt": ["CoreNetwork", "Outputs.Subnet1"]},
           "VPCSecurityGroup": {"Fn::GetAtt": ["VPCSecurity", "Outputs.VPCSecurityGroup"]},
-          "SSHKey": {"Ref": "SSHKey"}
+          "SSHKey": {"Ref": "SSHKey"},
+          "AvailabilityZone": {"Ref": "AvailabilityZone"}
         }
       }
     }
