@@ -36,5 +36,6 @@ service nginx restart
 # Update Public IP addresses
 pip install boto
 curl https://raw.githubusercontent.com/opalmer/aws/master/scripts/aws_set_public_a_record -o /usr/bin/aws_set_public_a_record
-chmod +x /usr/bin/aws_set_public_record
-/usr/bin/aws_set_public_record
+chmod +x /usr/bin/aws_set_public_a_record
+/usr/bin/aws_set_public_a_record pyfarm.net.
+/usr/bin/aws_set_public_a_record httpbin.pyfarm.net.
