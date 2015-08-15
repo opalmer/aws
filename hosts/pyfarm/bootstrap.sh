@@ -33,10 +33,8 @@ aws s3 cp s3://opalmer/aws/ssl/httpbin.key /etc/ssl/private/httpbin.key
 service uwsgi restart
 service nginx restart
 
-# Update Public IP address
-public_ip=$(ec2metadata | grep public-ipv4 | awk '{print $2}')
-
-aws --region us-east-1 cloudformation update-stack \
-    --stack-name pyfarm-dns --template-url https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/dns.template \
-    --parameters ParameterKey=PublicIP,ParameterValue=$public_ip
-
+# Update Public IP addresses
+pip install boto
+curl https://raw.githubusercontent.com/opalmer/aws/master/scripts/aws_set_public_a_record -o /usr/bin/aws_set_public_a_record
+chmod +x /usr/bin/aws_set_public_record
+/usr/bin/aws_set_public_record
