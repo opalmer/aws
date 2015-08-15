@@ -27,27 +27,25 @@
         },
         "Policies": [
           {
-            "PolicyName": "ssl_key_access_pyfarm",
+            "PolicyName": "pyfarm",
             "PolicyDocument": {
               "Version": "2012-10-17",
               "Statement": [
                 {
                   "Effect": "Allow",
                   "Action": "s3:GetObject",
-                  "Resource": "arn:aws:s3:::opalmer/aws/ssl/pyfarm.key"
-                }
-              ]
-            }
-          },
-          {
-            "PolicyName": "ssl_key_access_httpbin",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
+                  "Resource": [
+                    "arn:aws:s3:::opalmer/aws/ssl/httpbin.key",
+                    "arn:aws:s3:::opalmer/aws/ssl/pyfarm.key",
+                    "arn:aws:s3:::opalmer/aws/cloud_formation/pyfarm/dns.template"
+                  ]
+                },
                 {
                   "Effect": "Allow",
-                  "Action": "s3:GetObject",
-                  "Resource": "arn:aws:s3:::opalmer/aws/ssl/httpbin.key"
+                  "Action": "cloudformation:UpdateStack",
+                  "Resource": [
+                    "arn:aws:cloudformation:us-east-1:589179032371:stack/pyfarm-dns/*"
+                  ]
                 }
               ]
             }
