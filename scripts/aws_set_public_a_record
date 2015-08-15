@@ -19,7 +19,7 @@ parser.add_argument(
     ).read()
 )
 parser.add_argument(
-    "hostname", nargs=1,
+    "hostname",
     help="The hostname to establish the DNS record for"
 )
 args = parser.parse_args()
