@@ -29,6 +29,5 @@ service buildmaster restart
 pip install boto
 curl https://raw.githubusercontent.com/opalmer/aws/master/scripts/aws_set_public_a_record -o /usr/bin/aws_set_public_a_record
 chmod +x /usr/bin/aws_set_public_a_record
+/usr/bin/aws_set_public_a_record build.opalmer.com.
 
-# TODO: change to real domain once done with development
-/usr/bin/aws_set_public_a_record betabuild.opalmer.com.

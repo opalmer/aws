@@ -9,9 +9,12 @@ server {
     ssl_dhparam /etc/ssl/dhparams.pem;
     ssl_prefer_server_ciphers on;
 
-    server_name httpbin.pyfarm.net;
+    server_name build.opalmer.com;
     location / {
-        uwsgi_pass unix:///run/uwsgi/app/httpbin/socket;
-        include uwsgi_params;
+         proxy_pass http://127.0.0.1:8010;
+    }
+
+    location /githubhook/ {
+        proxy_pass http://127.0.0.1:9991;
     }
 }
