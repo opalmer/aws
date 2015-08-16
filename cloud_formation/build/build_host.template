@@ -1,0 +1,73 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Creates the host(s)",
+  "Parameters": {
+    "BuildInstanceType": {
+      "Type": "String",
+      "Description": "The EC2 instance type",
+      "Default": "t2.micro",
+      "AllowedValues": ["t2.micro", "t2.small", "t2.medium"],
+      "ConstraintDescription": "Must be a valid EC2 instance type."
+    },
+    "AvailabilityZone": {
+      "Type": "AWS::EC2::AvailabilityZone::Name",
+      "Default": "us-east-1b",
+      "Description": "The AZ to place the instance in."
+    }
+  },
+  "Resources": {
+"AccessRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Path": "/pyfarm/",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {"Service": ["ec2.amazonaws.com"]},
+              "Action": ["sts:AssumeRole"]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "pyfarm",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": [
+                    "arn:aws:s3:::opalmer/aws/ssl/build.key"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "route53:ListHostedZones",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "route53:ChangeResourceRecordSets",
+                    "route53:ListResourceRecordSets"
+                  ],
+                  "Resource": "arn:aws:route53:::hostedzone/Z2EEIQO8KKNH0I"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "InstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/pyfarm/",
+        "Roles": [{"Ref": "AccessRole"}]
+      }
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Cloud formation stack for build.opalmer.com",
+  "Parameters": {
+    "BuildInstanceType": {
+      "Type": "String",
+      "Description": "The EC2 instance type",
+      "Default": "t2.micro",
+      "AllowedValues": ["t2.micro", "t2.small", "t2.medium"],
+      "ConstraintDescription": "Must be a valid EC2 instance type."
+    },
+    "WindowsInstanceType": {
+      "Type": "String",
+      "Description": "The EC2 instance type",
+      "Default": "t2.micro",
+      "AllowedValues": ["t2.micro", "t2.small", "t2.medium"],
+      "ConstraintDescription": "Must be a valid EC2 instance type."
+    },
+    "AvailabilityZone": {
+      "Type": "AWS::EC2::AvailabilityZone::Name",
+      "Default": "us-east-1b",
+      "Description": "The AZ to place the instance in."
+    },
+    "BuildStorageType": {
+      "Type": "String",
+      "Description": "The general type of storage to provision for instances.",
+      "Default": "Magnetic",
+      "AllowedValues": ["SSD", "Magnetic"],
+      "ConstraintDescription": "Must be a valid storage type."
+    },
+    "WindowsStorageType": {
+      "Type": "String",
+      "Description": "The general type of storage to provision for instances.",
+      "Default": "Magnetic",
+      "AllowedValues": ["SSD", "Magnetic"],
+      "ConstraintDescription": "Must be a valid storage type."
+    },
+    "SSHKey": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Default": "opalmer",
+      "Description": "SSH key pair to be used for accessing the host."
+    },
+    "AdminCIDR": {
+      "Description": "The IP address range that can be used to SSH to the EC2 instances",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x."
+   }
+  },
+  "Mappings" : {
+    "TrustyHVMImages": {
+      "us-east-1": {
+        "SSD": "ami-75f0581e",
+        "Magnetic": "ami-7df05816"
+      },
+      "us-west-1": {
+        "SSD": "ami-978f71d3",
+        "Magnetic": "ami-8b8f71cf"
+      },
+      "us-west-2": {
+        "SSD": "ami-39666c09",
+        "Magnetic": "ami-33666c03"
+      }
+    },
+    "WindowsHVMImages": {
+      "us-east-1": {
+        "SSD": "",
+        "Magnetic": ""
+      }
+    }
+  },
+  "Resources": {
+    "VPC": {
+       "Type": "AWS::CloudFormation::Stack",
+       "Properties": {
+         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/vpc.template"
+       }
+    },
+    "Subnet": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/subnet.template",
+        "Parameters": {
+          "AvailabilityZone": {"Ref": "AvailabilityZone"},
+          "VpcId": {"Fn::GetAtt": ["VPC", "Outputs.VpcId"]},
+          "RouteTable": {"Fn::GetAtt": ["VPC", "Outputs.RouteTable"]},
+          "CidrBlock": "192.168.1.0/24"
+        }
+      }
+    },
+    "VPCSecurity": {
+      "Type": "AWS::CloudFormation::Stack",
+      "DependsOn": "VPC",
+      "Properties": {
+       "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/vpc_security.template",
+       "Parameters": {
+         "VpcId": {"Fn::GetAtt": ["VPC", "Outputs.VpcId"]},
+         "SubnetId": {"Fn::GetAtt": ["Subnet", "Outputs.SubnetId"]},
+         "AdminCIDR": {"Ref": "AdminCIDR"}
+       }
+      }
+    },
+    "BuildHost": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/build_host.template",
+        "Parameters": {
+          "ImageId": {"Fn::FindInMap": ["TrustyHVMImages", {"Ref": "AWS::Region"}, {"Ref": "BuildStorageType"}]},
+          "BuildInstanceType": {"Ref": "BuildInstanceType"},
+          "SubnetId": {"Fn::GetAtt": ["Subnet", "Outputs.SubnetId"]},
+          "SecurityGroupId": {"Fn::GetAtt": ["VPCSecurity", "Outputs.SecurityGroupId"]},
+          "SSHKey": {"Ref": "SSHKey"},
+          "AvailabilityZone": {"Ref": "AvailabilityZone"}
+        }
+      }
+    }
+  }
+}
