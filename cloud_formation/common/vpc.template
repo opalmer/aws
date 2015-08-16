@@ -1,14 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Establishes common elements of a VPC including subnets, gateway and routing.",
-  "Parameters": {
-    "Subnet1CIDR": {
-      "Type": "String",
-      "Default": "192.168.1.0/24",
-      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-      "ConstraintDescription": "Must be a valid IP CIDR range."
-    }
-  },
+  "Description": "Establishes common elements of a VPC.",
   "Resources": {
     "InternetGateway": {
       "Type": "AWS::EC2::InternetGateway"
@@ -26,12 +18,6 @@
          "InternetGatewayId": {"Ref": "InternetGateway"}
        }
     },
-    "NetworkACL": {
-      "Type": "AWS::EC2::NetworkAcl",
-      "Properties": {
-        "VpcId": {"Ref" : "VPC"}
-      }
-    },
     "RouteTable": {
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
@@ -46,41 +32,16 @@
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {"Ref": "InternetGateway"}
       }
-    },
-    "Subnet1": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "VpcId": {"Ref": "VPC"},
-        "CidrBlock": {"Ref": "Subnet1CIDR"}
-      }
-    },
-    "Subnet1RouteTableAssoc": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "SubnetId": {"Ref": "Subnet1"},
-        "RouteTableId": {"Ref": "RouteTable"}
-      }
-    },
-    "Subnet1ACLAssociation" : {
-      "Type": "AWS::EC2::SubnetNetworkAclAssociation",
-      "Properties": {
-        "SubnetId": {"Ref": "Subnet1"},
-        "NetworkAclId": {"Ref": "NetworkACL"}
-      }
     }
   },
   "Outputs": {
-    "NetworkACL": {
-      "Description": "The network ACL which new entries can be attacked to.",
-      "Value": {"Ref": "NetworkACL"}
-    },
-    "VPC": {
+    "VpcId": {
       "Description": "The VPC created by this stack.",
       "Value": {"Ref": "VPC"}
     },
-    "Subnet1": {
-      "Description": "The first subnet this stack created.",
-      "Value": {"Ref": "Subnet1"}
+    "RouteTable": {
+      "Description": "The routing table created by this stack",
+      "Value": {"Ref": "RouteTable"}
     }
   }
 }
