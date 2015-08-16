@@ -23,11 +23,10 @@
     },
     "SSHKey": {
       "Type": "AWS::EC2::KeyPair::KeyName",
-      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
-      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
-      "Default": "opalmer"
+      "Default": "opalmer",
+      "Description": "SSH key pair to be used for accessing the host."
     },
-    "AllowAdminFrom": {
+    "AdminCIDR": {
       "Description": "The IP address range that can be used to SSH to the EC2 instances",
       "Type": "String",
       "MinLength": "9",
@@ -56,21 +55,53 @@
     }
   },
   "Resources": {
-    "CoreNetwork": {
+    "DNSReadTheDocs": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Type": "CNAME",
+        "Name": "docs.pyfarm.net.",
+        "HostedZoneName": "pyfarm.net.",
+        "ResourceRecords": ["pyfarm.readthedocs.org."],
+        "TTL": "86400"
+      }
+    },
+    "DNSGoogleGroup": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Type": "CNAME",
+        "Name": "groups.pyfarm.net.",
+        "HostedZoneName": "pyfarm.net.",
+        "ResourceRecords": ["ghs.googlehosted.com."],
+        "TTL": "86400"
+      }
+    },
+    "VPC": {
        "Type": "AWS::CloudFormation::Stack",
        "Properties": {
-         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/vpc_network_core.template"
+         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/vpc.template"
        }
+    },
+    "Subnet": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/common/subnet.template",
+        "Parameters": {
+          "AvailabilityZone": {"Ref": "AvailabilityZone"},
+          "VpcId": {"Fn::GetAtt": ["VPC", "Outputs.VpcId"]},
+          "RouteTable": {"Fn::GetAtt": ["VPC", "Outputs.RouteTable"]},
+          "CidrBlock": "192.168.1.0/24"
+        }
+      }
     },
     "VPCSecurity": {
       "Type": "AWS::CloudFormation::Stack",
-      "DependsOn": "CoreNetwork",
+      "DependsOn": "VPC",
       "Properties": {
        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/vpc_security.template",
        "Parameters": {
-         "NetworkACL": {"Fn::GetAtt": ["CoreNetwork", "Outputs.NetworkACL"]},
-         "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]},
-         "AdminAddresses": {"Ref": "AllowAdminFrom"}
+         "VpcId": {"Fn::GetAtt": ["VPC", "Outputs.VpcId"]},
+         "SubnetId": {"Fn::GetAtt": ["Subnet", "Outputs.SubnetId"]},
+         "AdminCIDR": {"Ref": "AdminCIDR"}
        }
       }
     },
@@ -79,11 +110,10 @@
       "Properties": {
         "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/host.template",
         "Parameters": {
-          "VPC": {"Fn::GetAtt": ["CoreNetwork", "Outputs.VPC"]},
           "ImageId": {"Fn::FindInMap": ["TrustyHVMImages", {"Ref": "AWS::Region"}, {"Ref": "StorageType"}]},
           "InstanceType": {"Ref": "InstanceType"},
-          "Subnet1": {"Fn::GetAtt": ["CoreNetwork", "Outputs.Subnet1"]},
-          "VPCSecurityGroup": {"Fn::GetAtt": ["VPCSecurity", "Outputs.VPCSecurityGroup"]},
+          "SubnetId": {"Fn::GetAtt": ["Subnet", "Outputs.SubnetId"]},
+          "SecurityGroupId": {"Fn::GetAtt": ["VPCSecurity", "Outputs.SecurityGroupId"]},
           "SSHKey": {"Ref": "SSHKey"},
           "AvailabilityZone": {"Ref": "AvailabilityZone"}
         }
