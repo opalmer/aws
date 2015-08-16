@@ -1,0 +1,46 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Establishes a single subnet within a VPC.",
+  "Parameters": {
+    "AvailabilityZone": {
+      "Type": "AWS::EC2::AvailabilityZone::Name",
+      "Description": "The AZ to place the instance in."
+    },
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Description": "The VPC to apply the settings to."
+    },
+    "RouteTable": {
+      "Type": "String",
+      "Description": "The route table to associate the subnet with."
+    },
+    "CidrBlock": {
+      "Type": "String",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "Must be a valid IP CIDR range."
+    }
+  },
+  "Resources": {
+    "Subnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {"Ref": "AvailabilityZone"},
+        "VpcId": {"Ref": "VpcId"},
+        "CidrBlock": {"Ref": "CidrBlock"}
+      }
+    },
+    "SubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {"Ref": "Subnet"},
+        "RouteTableId": {"Ref": "RouteTable"}
+      }
+    }
+  },
+  "Outputs": {
+    "SubnetId": {
+      "Description": "The ID of the subnet created by this stack",
+      "Value": {"Ref": "Subnet"}
+    }
+  }
+}
