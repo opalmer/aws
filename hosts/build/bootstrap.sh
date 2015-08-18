@@ -8,6 +8,8 @@ hostname -F /etc/hostname
 # Updates, core packages and dependencies
 apt-get update
 apt-get -y upgrade
+apt-get -y install python-dev python-pip python-virtualenv git
+pip install --upgrade pip
 
 # Configure nginx
 rm -f /etc/nginx/sites-*/default
