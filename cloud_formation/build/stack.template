@@ -94,7 +94,7 @@
       "Type": "AWS::CloudFormation::Stack",
       "DependsOn": "VPC",
       "Properties": {
-       "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/vpc_security.template",
+       "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/build/vpc_security.template",
        "Parameters": {
          "VpcId": {"Fn::GetAtt": ["VPC", "Outputs.VpcId"]},
          "SubnetId": {"Fn::GetAtt": ["Subnet", "Outputs.SubnetId"]},
@@ -102,13 +102,13 @@
        }
       }
     },
-    "BuildHost": {
+    "BuildMaster": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/pyfarm/build_host.template",
+        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/build/build_master.template",
         "Parameters": {
           "ImageId": {"Fn::FindInMap": ["TrustyHVMImages", {"Ref": "AWS::Region"}, {"Ref": "BuildStorageType"}]},
-          "BuildInstanceType": {"Ref": "BuildInstanceType"},
+          "InstanceType": {"Ref": "BuildInstanceType"},
           "SubnetId": {"Fn::GetAtt": ["Subnet", "Outputs.SubnetId"]},
           "SecurityGroupId": {"Fn::GetAtt": ["VPCSecurity", "Outputs.SecurityGroupId"]},
           "SSHKey": {"Ref": "SSHKey"},
