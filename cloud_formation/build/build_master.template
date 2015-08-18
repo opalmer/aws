@@ -1,0 +1,116 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Creates the host(s)",
+  "Parameters": {
+    "ImageId": {
+      "Type": "AWS::EC2::Image::Id",
+      "Description": "The AMI image to use when creating the instance"
+    },
+    "InstanceType": {
+      "Type": "String",
+      "Default": "t2.micro",
+      "Description": "The EC2 instance type",
+      "AllowedValues": ["t2.micro", "t2.small", "t2.medium"]
+    },
+    "SubnetId": {
+      "Type": "AWS::EC2::Subnet::Id",
+      "Description": "The subnet the instance will assign its network adapter to."
+    },
+    "SecurityGroupId": {
+      "Type": "AWS::EC2::SecurityGroup::Id",
+      "Description": "The id of the security group the network adapter(s) will live in."
+    },
+    "SSHKey": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Default": "opalmer",
+      "Description": "SSH key pair to be used for accessing the host."
+    },
+    "AvailabilityZone": {
+      "Type": "AWS::EC2::AvailabilityZone::Name",
+      "Default": "us-east-1e",
+      "Description": "The AZ to place the instance in."
+    }
+  },
+  "Resources": {
+    "AccessRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Path": "/build/",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {"Service": ["ec2.amazonaws.com"]},
+              "Action": ["sts:AssumeRole"]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "buildmaster",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": [
+                    "arn:aws:s3:::opalmer/aws/ssl/build.key"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "route53:ListHostedZones",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "route53:ChangeResourceRecordSets",
+                    "route53:ListResourceRecordSets"
+                  ],
+                  "Resource": "arn:aws:route53:::hostedzone/Z2EEIQO8KKNH0I"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "InstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/build/",
+        "Roles": [{"Ref": "AccessRole"}]
+      }
+    },
+    "Host": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "KeyName": {"Ref": "SSHKey"},
+        "ImageId": {"Ref": "ImageId"},
+        "InstanceType": {"Ref": "InstanceType"},
+        "IamInstanceProfile": {"Ref": "InstanceProfile"},
+        "AvailabilityZone": {"Ref": "AvailabilityZone"},
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [{"Ref": "SecurityGroupId"}],
+            "SubnetId": {"Ref": "SubnetId"}
+          }
+        ],
+        "UserData": {"Fn::Base64": {"Fn::Join": ["\n", [
+          "#!/bin/bash -ex",
+          "curl https://raw.githubusercontent.com/opalmer/aws/master/hosts/build/bootstrap.sh -o /tmp/bootstrap.sh",
+          "chmod +x /tmp/bootstrap.sh",
+          "/tmp/bootstrap.sh >>/var/log/bootstrap.log 2>&1"
+        ]]}},
+        "Tags": [
+          {"Key": "Name", "Value": "buildmaster"}
+        ]
+      }
+    }
+  }
+}
