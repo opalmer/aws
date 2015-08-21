@@ -1,5 +1,4 @@
 import sys
-assert sys.version_info[0] == 3
 
 from setuptools import setup, find_packages
 
