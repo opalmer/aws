@@ -18,3 +18,4 @@ doing so.
 
 * https://cloud-images.ubuntu.com/locator/ec2/
 * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
+* https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-windows-stacks-bootstrapping.html 
