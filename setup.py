@@ -19,7 +19,8 @@ setup(
     ],
     entry_points={
         "console_scripts": {
-            "cloudformation = awsutil.cloudformation:main"
+            "cloudformation = awsutil.cloudformation:main",
+            "awsutil-set-public-record = awsutil.dns:set_public_record"
         }
     }
 )
