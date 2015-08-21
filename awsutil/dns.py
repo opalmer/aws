@@ -6,6 +6,7 @@ try:
 except ImportError:  # Python 3
     import urllib.request as urllib2
 
+from awsutil.logger import logger
 
 def set_public_record():
     parser = argparse.ArgumentParser(description="Updates DNS records")
@@ -31,8 +32,8 @@ def set_public_record():
 
     record = zone.get_a(args.hostname)
     if record is None:
-        print("Creating A %s %s" % (args.hostname, args.address))
+        logger.info("Creating A %s %s", args.hostname, args.address)
         zone.add_a(args.hostname, args.address, ttl=60)
     else:
-        print("Updating A %s %s" % (args.hostname, args.address))
+        logger.info("Updating A %s %s", args.hostname, args.address)
         zone.update_record(record, args.address, new_ttl=60)
