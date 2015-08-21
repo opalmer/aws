@@ -33,9 +33,6 @@ aws s3 cp s3://opalmer/aws/ssl/httpbin.key /etc/ssl/private/httpbin.key
 service uwsgi restart
 service nginx restart
 
-# Update Public IP addresses
-pip install boto
-curl https://raw.githubusercontent.com/opalmer/aws/master/scripts/aws_set_public_a_record -o /usr/bin/aws_set_public_a_record
-chmod +x /usr/bin/aws_set_public_a_record
-/usr/bin/aws_set_public_a_record pyfarm.net.
-/usr/bin/aws_set_public_a_record httpbin.pyfarm.net.
+# Install awsutil and update public addresses
+pip install https://github.com/opalmer/aws/zipball/master
+awsutil-set-public-record httpbin.pyfarm.net.

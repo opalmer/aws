@@ -27,9 +27,6 @@ aws s3 cp s3://opalmer/aws/ssl/build.key /etc/ssl/private/build.key
 service nginx restart
 service buildmaster restart
 
-# Update Public IP addresses
-pip install boto
-curl https://raw.githubusercontent.com/opalmer/aws/master/scripts/aws_set_public_a_record -o /usr/bin/aws_set_public_a_record
-chmod +x /usr/bin/aws_set_public_a_record
-/usr/bin/aws_set_public_a_record build.opalmer.com.
-
+# Install awsutil and update public address
+pip install https://github.com/opalmer/aws/zipball/master
+awsutil-set-public-record build.opalmer.com.
