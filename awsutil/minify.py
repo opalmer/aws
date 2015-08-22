@@ -29,6 +29,6 @@ def minify(path):
         )
     except Exception as error:
         logger.error("Failed to convert %s: %s", path, error)
-        raise 
+        raise
     logger.debug("minify(%r): %s -> %s", path, original_size, len(json_data))
     return json_data.encode("utf-8")
