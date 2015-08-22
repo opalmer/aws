@@ -18,6 +18,11 @@
       "Type": "String",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
       "ConstraintDescription": "Must be a valid IP CIDR range."
+    },
+    "SubnetName": {
+      "Type": "String",
+      "Default": "",
+      "Description": "The human name to apply to the subnet we're creating"
     }
   },
   "Resources": {
@@ -26,7 +31,10 @@
       "Properties": {
         "AvailabilityZone": {"Ref": "AvailabilityZone"},
         "VpcId": {"Ref": "VpcId"},
-        "CidrBlock": {"Ref": "CidrBlock"}
+        "CidrBlock": {"Ref": "CidrBlock"},
+        "Tags": [
+          {"Key": "Name", "Value": {"Ref": "SubnetName"}}
+        ]
       }
     },
     "SubnetRouteTableAssociation": {
