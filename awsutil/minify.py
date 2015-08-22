@@ -22,9 +22,13 @@ def minify(path):
     # Dump the json data with no spaces between separators and sorted
     # keys.  Without the key sorting you can end up with different key order
     # between runs.
-    json_data = dumps(
-        loads(json_data),
-        separators=(",", ":"), sort_keys=True
-    )
+    try:
+        json_data = dumps(
+            loads(json_data),
+            separators=(",", ":"), sort_keys=True
+        )
+    except Exception as error:
+        logger.error("Failed to convert %s: %s", path, error)
+        raise 
     logger.debug("minify(%r): %s -> %s", path, original_size, len(json_data))
     return json_data.encode("utf-8")
