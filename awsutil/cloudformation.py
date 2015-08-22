@@ -8,6 +8,7 @@ import boto
 
 from awsutil.config import config
 from awsutil.logger import logger
+from awsutil.minify import minify
 
 cloud_formation = boto.connect_cloudformation()
 s3 = boto.connect_s3()
@@ -65,8 +66,8 @@ def validate(filepaths):
     assert isinstance(filepaths, (list, tuple))
     for path in filepaths:
         logger.info("Validating %s", path)
-        with open(path, "rb") as stream:
-            cloud_formation.validate_template(template_body=stream.read())
+        template_body = minify(path)
+        cloud_formation.validate_template(template_body=template_body)
 
 
 def filepath_to_key_path(path):
@@ -118,18 +119,15 @@ def upload(filepaths):
     assert isinstance(filepaths, (list, tuple))
     for path in filepaths:
         key = get_key(path)
+        template_data = minify(path)
 
         if key is None:
             validate([path])
             logger.info("Uploading new template %s", path)
             key = get_key(path, validate=False)
-            with open(path, "rb") as stream:
-                key.set_contents_from_string(stream.read())
+            key.set_contents_from_string(template_data)
 
         else:
-            with open(path, "rb") as stream:
-                template_data = stream.read()
-
             md5 = hashlib.md5(template_data)
 
             if md5.hexdigest() != key.etag.replace('"', ""):
