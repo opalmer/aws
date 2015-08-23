@@ -14,21 +14,28 @@
     },
     "AvailabilityZone": {
       "Type": "AWS::EC2::AvailabilityZone::Name",
-      "Default": "us-east-1e",
+      "Default": "us-east-1b",
       "Description": "The AZ to place the instance in."
     },
     "SubnetId": {
       "Type": "AWS::EC2::Subnet::Id",
-      "Description": "The subnet the instance will assign its network adapter to."
+      "Description": "The subnet the instance will assign its network adapter to.",
+      "Default": "subnet-830ffabe"
     },
     "SecurityGroupId": {
       "Type": "AWS::EC2::SecurityGroup::Id",
-      "Description": "The id of the security group the network adapter(s) will live in."
+      "Description": "The id of the security group the network adapter(s) will live in.",
+      "Default": "sg-d0177cb7"
     },
     "KeyPair": {
       "Type": "AWS::EC2::KeyPair::KeyName",
       "Default": "opalmer",
       "Description": "The key pair to be used for decrypting the Windows password."
+    },
+    "waitAfterCompletion": {
+      "Type": "String",
+      "Description": "How long to wait before performing another command",
+      "Default": "1"
     }
   },
   "Resources": {
@@ -72,7 +79,7 @@
 
               // VS
               "download-visualstudio",
-              "install-prereqs-visualstudio",
+              "install-prereqs-visualstudio"
             ]
           },
           "prerequisites": {
@@ -104,9 +111,11 @@
               // Install PyPy
               "0-pypy-2.6.0-32": {
                 "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\pypy-2.6.0-win32.zip -oC:\\python\\",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "1-pypy3-2.4.0-32": {
                 "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\pypy3-2.4.0-win32.zip -oC:\\python\\",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
 
               // Install CPython
@@ -114,75 +123,103 @@
                 "command": {"Fn::Join": [" ", [
                   "msiexec /qb /i",
                   "C:\\downloads\\python-2.6.6.amd64.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.6.6-64"]]}
+                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.6.6-64"]]},
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
                 },
               "2.6.6-32": {
                 "command": {"Fn::Join": [" ", [
                   "msiexec /qb /i",
                   "C:\\downloads\\python-2.6.6.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.6.6-32"]]}
+                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.6.6-32"]]},
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "2.7.10-64": {
                 "command": {"Fn::Join": [" ", [
                   "msiexec /qb /i",
                   "C:\\downloads\\python-2.7.10.amd64.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.7.10-64"]]}
+                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.7.10-64"]]},
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "2.7.10-32": {
                 "command": {"Fn::Join": [" ", [
                   "msiexec /qb /i",
                   "C:\\downloads\\python-2.7.10.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.7.10-32"]]}
+                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.7.10-32"]]},
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "3.2.5-64": {
                 "command": {"Fn::Join": [" ", [
                   "msiexec /qb /i",
                   "C:\\downloads\\python-3.2.5.amd64.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.2.5-64"]]}
+                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.2.5-64"]]},
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "3.2.5-32": {
                 "command": {"Fn::Join": [" ", [
                   "msiexec /qb /i",
                   "C:\\downloads\\python-3.2.5.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.2.5-32"]]}
+                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.2.5-32"]]},
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "3.3.5-64": {
                 "command": {"Fn::Join": [" ", [
                   "msiexec /qb /i",
                   "C:\\downloads\\python-3.3.5.amd64.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.3.5-64"]]}
+                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.3.5-64"]]},
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "3.3.5-32": {
                 "command": {"Fn::Join": [" ", [
                   "msiexec /qb /i",
                   "C:\\downloads\\python-3.3.5.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.3.5-32"]]}
+                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.3.5-32"]]},
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "3.4.3-64": {
                 "command": {"Fn::Join": [" ", [
                   "msiexec /qb /i",
                   "C:\\downloads\\python-3.4.3.amd64.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.4.3-64"]]}
+                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.4.3-64"]]},
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "3.4.3-32": {
                 "command": {"Fn::Join": [" ", [
                   "msiexec /qb /i",
                   "C:\\downloads\\python-3.4.3.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.4.3-32"]]}
+                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.4.3-32"]]},
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               }
             }
           },
           "install-python-post": {
             "commands": {
-              "del-assoc-py": {"command": "assoc .py="},
-              "del-assoc-pyc": {"command": "assoc .pyc="},
-              "del-assoc-pyo": {"command": "assoc .pyo="},
-              "del-assoc-pyw": {"command": "assoc .pyw="},
+              "del-assoc-py": {
+                "command": "assoc .py=",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
+              },
+              "del-assoc-pyc": {
+                "command": "assoc .pyc=",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
+              },
+              "del-assoc-pyo": {
+                "command": "assoc .pyo=",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
+              },
+              "del-assoc-pyw": {
+                "command": "assoc .pyw=",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
+              },
 
               // PyPy was extracted to a subdirectory and has the wrong
               // naming convention.
-              "rename-pypy3-2.4.0-32": {"command": "move C:\\python\\pypy3-2.4.0-win32 C:\\python\\pypy3-2.4.0-32"},
-              "rename-pypy-2.6.0-32": {"command": "move C:\\python\\pypy-2.6.0-win32 C:\\python\\pypy-2.6.0-32"},
+              "rename-pypy3-2.4.0-32": {
+                "command": "move C:\\python\\pypy3-2.4.0-win32 C:\\python\\pypy3-2.4.0-32",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
+              },
+              "rename-pypy-2.6.0-32": {
+                "command": "move C:\\python\\pypy-2.6.0-win32 C:\\python\\pypy-2.6.0-32",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
+              }
             }
           },
           "download-visualstudio": {
@@ -196,13 +233,16 @@
           "install-prereqs-visualstudio": {
             "commands": {
               "dotnetfx34": {
-                "command": "dism /Online /Enable-Feature /Featurename:NetFX3 /All"
+                "command": "dism /Online /Enable-Feature /Featurename:NetFX3 /All",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "extract-2008": {
-                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" C:\\downloads\\VS2008ExpressENUX1397868.iso -oC:\\downloads\\VS2008ExpressENUX1397868"
+                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" C:\\downloads\\VS2008ExpressENUX1397868.iso -oC:\\downloads\\VS2008ExpressENUX1397868",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               },
               "extract-2010": {
-                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\VS2010Express1.iso -oC:\\downloads\\VS2010Express1"
+                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\VS2010Express1.iso -oC:\\downloads\\VS2010Express1",
+                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
               }
             }
           }
