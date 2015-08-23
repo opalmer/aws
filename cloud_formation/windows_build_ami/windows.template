@@ -111,33 +111,21 @@
             },
             "commands": {
               "extract-2008": {
-                "command": {"Fn::Join": [" ", [
-                  "C:\\Program Files\\7-Zip\\7z.exe", "x",
-                  "C:\\downloads\\VS2008ExpressENUX1397868.iso",
-                  "-oC:\\downloads\\VS2008ExpressENUX1397868"]]}
+                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" C:\\downloads\\VS2008ExpressENUX1397868.iso -oC:\\downloads\\VS2008ExpressENUX1397868"
               },
               "extract-2010": {
-                "command": {"Fn::Join": [" ", [
-                  "C:\\Program Files\\7-Zip\\7z.exe", "x",
-                  "C:\\downloads\\VS2010Express1.iso",
-                  "-oC:\\downloads\\VS2010Express1"]]}
+                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\VS2010Express1.iso -oC:\\downloads\\VS2010Express1"
               }
             }
           },
           "install-python": {
             "commands": {
-              // Extract PyPy
+              // Install PyPy
               "pypy-2.6.0-32": {
-                "command": {"Fn::Join": [" ", [
-                  "C:\\Program Files\\7-Zip\\7z.exe", "x",
-                  "C:\\downloads\\pypy-2.6.0-win32.zip",
-                  "-oC:\\python\\"]]}
+                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\pypy-2.6.0-win32.zip -oC:\\python\\"
               },
               "pypy3-2.4.0-32": {
-                "command": {"Fn::Join": [" ", [
-                  "C:\\Program Files\\7-Zip\\7z.exe", "x",
-                  "C:\\downloads\\pypy3-2.4.0-win32.zip",
-                  "-oC:\\python\\"]]}
+                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\pypy3-2.4.0-win32.zip -oC:\\python\\"
               },
               "rename-pypy3-2.4.0-32": {
                 "command": "move C:\\python\\pypy3-2.4.0-win32 C:\\python\\pypy3-2.4.0-32"
