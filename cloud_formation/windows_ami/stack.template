@@ -54,7 +54,7 @@
       "Type": "AWS::CloudFormation::Stack",
       "DependsOn": "VPC",
       "Properties": {
-       "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/windows_build_ami/vpc_security.template",
+       "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/windows_ami/vpc_security.template",
        "Parameters": {
          "VpcId": {"Fn::GetAtt": ["VPC", "Outputs.VpcId"]},
          "SubnetId": {"Fn::GetAtt": ["Subnet", "Outputs.SubnetId"]},
@@ -65,7 +65,7 @@
     "WindowsInstance": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/windows_build_ami/windows.template",
+        "TemplateURL": "https://s3.amazonaws.com/opalmer/aws/cloud_formation/windows_ami/windows.template",
         "Parameters": {
           "ImageId": {"Fn::FindInMap": ["WindowsAMI", {"Ref": "AWS::Region"}, "EBS"]},
           "InstanceType": {"Ref": "InstanceType"},
