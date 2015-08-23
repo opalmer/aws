@@ -69,43 +69,15 @@
       "Metadata": {
         "AWS::CloudFormation::Init": {
           "configSets": {
-            "default": [
-              "prerequisites",
-
-              // Python
-              "download-python",
-              "install-python",
-              "install-setuptools",
-              "install-pip",
-              "install-virtualenv",
-              "post-install-python",
-
-              // VS
-              // Installation of VS2008 and VS2010 is best performed
-              // manually.  For the expression editions there's not an
-              // easy or well supported way of performing an unattended
-              // install.
-              "visualstudio"
-            ]
+            "default": ["install"]
           },
-          "prerequisites": {
+          "install": {
             "files": {
-              "C:\\downloads\\7-zip.msi": {"source": "http://www.7-zip.org/a/7z938-x64.msi"}
-            },
-            "commands": {
-              "0-7zip": {
-                "command": "msiexec /qb /i C:\\downloads\\7-zip.msi",
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "1-7zip-cleanup": {
-                "command": "del C:\\downloads\\7-zip.msi",
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              }
-            }
-          },
-          "download-python": {
-            "files": {
-              "C:\\downloads\\ez_setup.py": {"source": "https://bootstrap.pypa.io/ez_setup.py"},
+              // Misc
+              "C:\\downloads\\7-zip.msi": {"source": "http://www.7-zip.org/a/7z938-x64.msi"},
+              "C:\\downloads\\install.bat": {"source": "https://raw.githubusercontent.com/opalmer/aws/master/hosts/windows_ami/install.bat"},
+
+              // CPython
               "C:\\downloads\\python-2.6.6.amd64.msi": {"source": "https://www.python.org/ftp/python/2.6.6/python-2.6.6.amd64.msi"},
               "C:\\downloads\\python-2.6.6.msi": {"source": "https://www.python.org/ftp/python/2.6.6/python-2.6.6.msi"},
               "C:\\downloads\\python-2.7.10.amd64.msi": {"source": "https://www.python.org/ftp/python/2.7.10/python-2.7.10.amd64.msi"},
@@ -116,212 +88,32 @@
               "C:\\downloads\\python-3.3.5.msi": {"source": "https://www.python.org/ftp/python/3.3.5/python-3.3.5.msi"},
               "C:\\downloads\\python-3.4.3.amd64.msi": {"source": "https://www.python.org/ftp/python/3.4.3/python-3.4.3.amd64.msi"},
               "C:\\downloads\\python-3.4.3.msi": {"source": "https://www.python.org/ftp/python/3.4.3/python-3.4.3.amd64.msi"},
+
+              // PyPy
               "C:\\downloads\\pypy-2.6.0-win32.zip": {"source": "https://bitbucket.org/pypy/pypy/downloads/pypy-2.6.0-win32.zip"},
-              "C:\\downloads\\pypy3-2.4.0-win32.zip": {"source": "https://bitbucket.org/pypy/pypy/downloads/pypy3-2.4.0-win32.zip"}
-            }
-          },
-          "install-python": {
-            "commands": {
-              // Install PyPy
-              "0-pypy-2.6.0-32": {
-                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\pypy-2.6.0-win32.zip -oC:\\python\\",
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "1-pypy3-2.4.0-32": {
-                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\pypy3-2.4.0-win32.zip -oC:\\python\\",
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
+              "C:\\downloads\\pypy3-2.4.0-win32.zip": {"source": "https://bitbucket.org/pypy/pypy/downloads/pypy3-2.4.0-win32.zip"},
 
-              // Install CPython
-              "2.6.6-64": {
-                "command": {"Fn::Join": [" ", [
-                  "msiexec /qb /i",
-                  "C:\\downloads\\python-2.6.6.amd64.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.6.6-64"]]},
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-                },
-              "2.6.6-32": {
-                "command": {"Fn::Join": [" ", [
-                  "msiexec /qb /i",
-                  "C:\\downloads\\python-2.6.6.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.6.6-32"]]},
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "2.7.10-64": {
-                "command": {"Fn::Join": [" ", [
-                  "msiexec /qb /i",
-                  "C:\\downloads\\python-2.7.10.amd64.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.7.10-64"]]},
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "2.7.10-32": {
-                "command": {"Fn::Join": [" ", [
-                  "msiexec /qb /i",
-                  "C:\\downloads\\python-2.7.10.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-2.7.10-32"]]},
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "3.2.5-64": {
-                "command": {"Fn::Join": [" ", [
-                  "msiexec /qb /i",
-                  "C:\\downloads\\python-3.2.5.amd64.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.2.5-64"]]},
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "3.2.5-32": {
-                "command": {"Fn::Join": [" ", [
-                  "msiexec /qb /i",
-                  "C:\\downloads\\python-3.2.5.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.2.5-32"]]},
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "3.3.5-64": {
-                "command": {"Fn::Join": [" ", [
-                  "msiexec /qb /i",
-                  "C:\\downloads\\python-3.3.5.amd64.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.3.5-64"]]},
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "3.3.5-32": {
-                "command": {"Fn::Join": [" ", [
-                  "msiexec /qb /i",
-                  "C:\\downloads\\python-3.3.5.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.3.5-32"]]},
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "3.4.3-64": {
-                "command": {"Fn::Join": [" ", [
-                  "msiexec /qb /i",
-                  "C:\\downloads\\python-3.4.3.amd64.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.4.3-64"]]},
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "3.4.3-32": {
-                "command": {"Fn::Join": [" ", [
-                  "msiexec /qb /i",
-                  "C:\\downloads\\python-3.4.3.msi",
-                  "ALLUSERS=1", "TARGETDIR=C:\\python\\cpython-3.4.3-32"]]},
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              }
-            }
-          },
-          "install-setuptools": {
-            "commands": {
-              "cpython-2.6.6-32": {"command": "C:\\python\\cpython-2.6.6-32\\python.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"},
-              "cpython-2.6.6-64": {"command": "C:\\python\\cpython-2.6.6-64\\python.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"},
-              "cpython-2.7.10-32": {"command": "C:\\python\\cpython-2.7.10-32\\python.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"},
-              "cpython-2.7.10-64": {"command": "C:\\python\\cpython-2.7.10-64\\python.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"},
-              "cpython-3.2.5-32": {"command": "C:\\python\\cpython-3.2.5-32\\python.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"},
-              "cpython-3.2.5-64": {"command": "C:\\python\\cpython-3.2.5-64\\python.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"},
-              "cpython-3.3.5-32": {"command": "C:\\python\\cpython-3.3.5-32\\python.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"},
-              "cpython-3.3.5-64": {"command": "C:\\python\\cpython-3.3.5-64\\python.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"},
-              "cpython-3.4.3-32": {"command": "C:\\python\\cpython-3.4.3-32\\python.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"},
-              "pypy-2.6.0-32": {"command": "C:\\python\\pypy-2.6.0-32\\pypy.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"},
-              "pypy3-2.4.0-32": {"command": "C:\\python\\pypy3-2.4.0-32\\pypy.exe C:\\downloads\\ez_setup.py", "waitAfterCompletion": "0"}
-            }
-          },
-          "install-pip": {
-            "commands": {
-              "cpython-2.6.6-32": {"command": "C:\\python\\cpython-2.6.6-32\\Scripts\\easy_install.exe pip", "waitAfterCompletion": "0"},
-              "cpython-2.6.6-64": {"command": "C:\\python\\cpython-2.6.6-64\\Scripts\\easy_install.exe pip", "waitAfterCompletion": "0"},
-              "cpython-2.7.10-32": {"command": "C:\\python\\cpython-2.7.10-32\\Scripts\\easy_install.exe pip", "waitAfterCompletion": "0"},
-              "cpython-2.7.10-64": {"command": "C:\\python\\cpython-2.7.10-64\\Scripts\\easy_install.exe pip", "waitAfterCompletion": "0"},
-              "cpython-3.2.5-32": {"command": "C:\\python\\cpython-3.2.5-32\\Scripts\\easy_install.exe pip", "waitAfterCompletion": "0"},
-              "cpython-3.2.5-64": {"command": "C:\\python\\cpython-3.2.5-64\\Scripts\\easy_install.exe pip", "waitAfterCompletion": "0"},
-              "cpython-3.3.5-32": {"command": "C:\\python\\cpython-3.3.5-32\\Scripts\\easy_install.exe pip", "waitAfterCompletion": "0"},
-              "cpython-3.3.5-64": {"command": "C:\\python\\cpython-3.3.5-64\\Scripts\\easy_install.exe pip", "waitAfterCompletion": "0"},
-              "cpython-3.4.3-32": {"command": "C:\\python\\cpython-3.4.3-32\\Scripts\\easy_install.exe pip", "waitAfterCompletion": "0"},
-              "pypy-2.6.0-32": {"command": "C:\\python\\pypy-2.6.0-32\\bin\\easy_install.exe pip", "waitAfterCompletion": "0"},
-              "pypy3-2.4.0-32": {"command": "C:\\python\\pypy3-2.4.0-32\\bin\\easy_install.exe pip", "waitAfterCompletion": "0"}
-            }
-          },
-          "install-virtualenv": {
-            "commands": {
-              "cpython-2.6.6-32": {"command": "C:\\python\\cpython-2.6.6-32\\Scripts\\pip.exe install virtualenv", "waitAfterCompletion": "0"},
-              "cpython-2.6.6-64": {"command": "C:\\python\\cpython-2.6.6-64\\Scripts\\pip.exe install virtualenv", "waitAfterCompletion": "0"},
-              "cpython-2.7.10-32": {"command": "C:\\python\\cpython-2.7.10-32\\Scripts\\pip.exe install virtualenv", "waitAfterCompletion": "0"},
-              "cpython-2.7.10-64": {"command": "C:\\python\\cpython-2.7.10-64\\Scripts\\pip.exe install virtualenv", "waitAfterCompletion": "0"},
-              "cpython-3.2.5-32": {"command": "C:\\python\\cpython-3.2.5-32\\Scripts\\pip.exe install virtualenv", "waitAfterCompletion": "0"},
-              "cpython-3.2.5-64": {"command": "C:\\python\\cpython-3.2.5-64\\Scripts\\pip.exe install virtualenv", "waitAfterCompletion": "0"},
-              "cpython-3.3.5-32": {"command": "C:\\python\\cpython-3.3.5-32\\Scripts\\pip.exe install virtualenv", "waitAfterCompletion": "0"},
-              "cpython-3.3.5-64": {"command": "C:\\python\\cpython-3.3.5-64\\Scripts\\pip.exe install virtualenv", "waitAfterCompletion": "0"},
-              "cpython-3.4.3-32": {"command": "C:\\python\\cpython-3.4.3-32\\Scripts\\pip.exe install virtualenv", "waitAfterCompletion": "0"},
-              "pypy-2.6.0-32": {"command": "C:\\python\\pypy-2.6.0-32\\bin\\pip.exe install virtualenv", "waitAfterCompletion": "0"},
-              "pypy3-2.4.0-32": {"command": "C:\\python\\pypy3-2.4.0-32\\bin\\pip.exe install virtualenv", "waitAfterCompletion": "0"}
-            }
-          },
-          "post-install-python": {
-            "commands": {
-              "0-del-assoc-py": {
-                "command": "assoc .py=",
-                "waitAfterCompletion": "0"
-              },
-              "0-del-assoc-pyc": {
-                "command": "assoc .pyc=",
-                "waitAfterCompletion": "0"
-              },
-              "0-del-assoc-pyo": {
-                "command": "assoc .pyo=",
-                "waitAfterCompletion": "0"
-              },
-              "0-del-assoc-pyw": {
-                "command": "assoc .pyw=",
-                "waitAfterCompletion": "0"
-              },
+              // Python packages
+              "C:\\downloads\\setuptools-18.2.zip": "https://pypi.python.org/packages/source/s/setuptools/setuptools-18.2.zip",
+              "C:\\downloads\\pip-7.1.2.tar.gz": "https://pypi.python.org/packages/source/p/pip/pip-7.1.2.tar.gz",
+              "C:\\downloads\\virtualenv-13.1.2.tar.gz": "https://pypi.python.org/packages/source/v/virtualenv/virtualenv-13.1.2.tar.gz",
 
-              // PyPy was extracted to a subdirectory and has the wrong
-              // naming convention.
-              "1-rename-pypy3-2.4.0-32": {
-                "command": "move C:\\python\\pypy3-2.4.0-win32 C:\\python\\pypy3-2.4.0-32",
-                "waitAfterCompletion": "0"
-              },
-              "1-rename-pypy-2.6.0-32": {
-                "command": "move C:\\python\\pypy-2.6.0-win32 C:\\python\\pypy-2.6.0-32",
-                "waitAfterCompletion": "0"
-              },
-
-              // Remove the original installers, if we've made it this far we
-              // don't need these anymore.
-              "2-cleanup-installers-msi": {
-                "command": "del C:\\downloads\\python-*.msi",
-                "waitAfterCompletion": "0"
-              },
-              "2-cleanup-installers-pypy": {
-                "command": "del C:\\downloads\\pypy*.zip",
-                "waitAfterCompletion": "0"
-              },
-              "2-cleanup-ez_setup": {
-                "command": "del C:\\downloads\\ez_setup.py",
-                "waitAfterCompletion": "0"
-              }
-            }
-          },
-          "visualstudio": {
-            "files": {
+              // Visual Studio Files
               "C:\\downloads\\VS2008ExpressENUX1397868.iso": {"source": "http://download.microsoft.com/download/8/B/5/8B5804AD-4990-40D0-A6AA-CE894CBBB3DC/VS2008ExpressENUX1397868.iso"},
-              "C:\\downloads\\VS2010Express1.iso": {"source": "http://download.microsoft.com/download/1/E/5/1E5F1C0A-0D5B-426A-A603-1798B951DDAE/VS2010Express1.iso"}
+              "C:\\downloads\\VS2010Express1.iso": {"source": "http://download.microsoft.com/download/1/E/5/1E5F1C0A-0D5B-426A-A603-1798B951DDAE/VS2010Express1.iso"},
+
+              // Windows SDK for 2010
+              "C:\\downloads\\GRMSDK_EN_DVD.iso": {"source": "http://download.microsoft.com/download/F/1/0/F10113F5-B750-4969-A255-274341AC6BCE/GRMSDK_EN_DVD.iso"},
+
+              // Windows SDK for 2008
+//              "C:\\downloads\\6.0.6001.18000.367-KRMSDK_EN": {"source": "http://download.microsoft.com/download/f/e/6/fe6eb291-e187-4b06-ad78-bb45d066c30f/6.0.6001.18000.367-KRMSDK_EN.iso"},
+
+              "C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\VC\\bin\\amd64\\vcvars64.bat": {
+                "source": "https://raw.githubusercontent.com/opalmer/aws/master/hosts/windows_ami/files/vcvars64.bat"
+              }
             },
             "commands": {
-              "0-dotnetfx34": {
-                "command": "dism /Online /Enable-Feature /Featurename:NetFX3 /All",
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "1-extract-2008": {
-                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\VS2008ExpressENUX1397868.iso -oC:\\downloads\\VS2008ExpressENUX1397868",
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "2-remove-2008-source": {
-                "command": "del C:\\downloads\\VS2008ExpressENUX1397868.iso",
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "3-extract-2010": {
-                "command": "\"C:\\Program Files\\7-Zip\\7z.exe\" x C:\\downloads\\VS2010Express1.iso -oC:\\downloads\\VS2010Express1",
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              },
-              "4-remove-2010-source": {
-                "command": "del C:\\downloads\\VS2010Express1.iso",
-                "waitAfterCompletion": {"Ref": "waitAfterCompletion"}
-              }
+              "install": {"command": "C:\\downloads\\install.bat"}
             }
           }
         }
