@@ -87,6 +87,7 @@ def get_key(path, validate=True):
     key_path = filepath_to_key_path(path)
     bucket = s3.get_bucket(config.get("cloudformation", "bucket"))
     key = bucket.get_key(key_path, validate=validate)
+    key.change_storage_class("REDUCED_REDUNDANCY")
     logger.debug("get_key(%r) -> %r", key_path, key)
     return key
 
