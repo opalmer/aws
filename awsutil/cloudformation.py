@@ -87,7 +87,6 @@ def get_key(path, validate=True):
     key_path = filepath_to_key_path(path)
     bucket = s3.get_bucket(config.get("cloudformation", "bucket"))
     key = bucket.get_key(key_path, validate=validate)
-    key.change_storage_class("REDUCED_REDUNDANCY")
     logger.debug("get_key(%r) -> %r", key_path, key)
     return key
 
@@ -108,6 +107,14 @@ def delete_extra_templates():
             key.delete()
 
 
+def get_url_for_key(key):
+    """Returns a url for a given key object"""
+    return "https://s3.amazonaws.com/{bucket_name}/{key_path}".format(
+        bucket_name=key.bucket.name,
+        key_path=key.key
+    )
+
+
 def upload(filepaths):
     """
     For each path in file paths:
@@ -124,17 +131,21 @@ def upload(filepaths):
 
         if key is None:
             validate([path])
-            logger.info("Uploading new template %s", path)
             key = get_key(path, validate=False)
             key.set_contents_from_string(template_data)
+            key.change_storage_class("REDUCED_REDUNDANCY")
+            url = get_url_for_key(key)
+            logger.info("Uploaded new template %s", url)
 
         else:
             md5 = hashlib.md5(template_data)
 
             if md5.hexdigest() != key.etag.replace('"', ""):
                 validate([path])
-                logger.info("Uploading %s", path)
+                url = get_url_for_key(key)
+                logger.info("Uploading %s", url)
                 key.set_contents_from_string(template_data)
+                key.change_storage_class("REDUCED_REDUNDANCY")
 
 
 def main():
